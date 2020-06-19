@@ -331,7 +331,7 @@ Resources:
           # FIXME: image should be pulled from ECR based on the API code
           Image: 'geopython/pygeoapi:0.8.0'
           PortMappings:
-            - ContainerPort: 8000
+            - ContainerPort: 80
           LogConfiguration:
             LogDriver: awslogs
             Options:
