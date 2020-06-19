@@ -64,6 +64,13 @@ Parameters:
     Type: String
     Default: t3.medium
     ConstraintDescription: Please choose a valid instance type.
+  ApiImage:
+    Description: ECR repo URL
+    Type: String
+  Version:
+    Description: Image tag to be used for deploy
+    Type: String
+    Default: latest
 Mappings:
   # Hard values for the subnet masks. These masks define
   # the range of internal IP addresses that can be assigned.
@@ -328,8 +335,8 @@ Resources:
                   - !GetAtt [DB, Endpoint.Port]
                   - "/"
                   - !Ref DBName
-              - Name: DNSName
-                Value: !GetAtt PublicLoadBalancer.DNSName
+            - Name: DNSName
+              Value: !GetAtt PublicLoadBalancer.DNSName
           # FIXME: image should be pulled from ECR based on the API code
           Image: !Join
             - ""

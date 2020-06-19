@@ -10,4 +10,5 @@ $STACK_NAME --tags Project=$PROJECT --parameter-overrides \
 DBUser=$DBUser DBPassword=$DBPassword \
 DBName=$DBName DBUser=$DBUser DBPassword=$DBPassword \
 DesiredCount=$DesiredCount \
+ApiImage=$ApiImage Version=$Version \
 --region $REGION --capabilities CAPABILITY_IAM \
