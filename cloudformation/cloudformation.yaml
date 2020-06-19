@@ -331,7 +331,12 @@ Resources:
               - Name: DNSName
                 Value: !GetAtt PublicLoadBalancer.DNSName
           # FIXME: image should be pulled from ECR based on the API code
-          Image: 'geopython/pygeoapi:0.8.0'
+          Image: !Join
+            - ""
+            -
+              - !Ref ApiImage
+              - ":"
+              - !Ref Version
           PortMappings:
             - ContainerPort: 80
           LogConfiguration:

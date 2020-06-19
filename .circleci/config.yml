@@ -13,4 +13,4 @@ workflows:
           no-output-timeout: 20m
           region: AWS_REGION
           repo: covid-wb-api
-          tag: 'latest'
+          tag: 'latest,$CIRCLE_BRANCH,$CIRCLE_PR_NUMBER'
