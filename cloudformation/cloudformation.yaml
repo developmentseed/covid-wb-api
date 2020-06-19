@@ -364,7 +364,7 @@ Resources:
       TaskDefinition: !Ref 'APITask'
       LoadBalancers:
         - ContainerName: api
-          ContainerPort: 8000
+          ContainerPort: 80
           TargetGroupArn: !Ref 'TargetGroup'
 
   # A target group. This is used for keeping track of all the tasks, and
@@ -382,7 +382,7 @@ Resources:
       HealthyThresholdCount: 2
       TargetType: ip
       Name: api
-      Port: 8000
+      Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       VpcId: !Ref VPC
