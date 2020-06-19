@@ -328,6 +328,8 @@ Resources:
                   - !GetAtt [DB, Endpoint.Port]
                   - "/"
                   - !Ref DBName
+              - Name: DNSName
+                Value: !GetAtt PublicLoadBalancer.DNSName
           # FIXME: image should be pulled from ECR based on the API code
           Image: 'geopython/pygeoapi:0.8.0'
           PortMappings:
