@@ -71,6 +71,10 @@ Parameters:
     Description: Image tag to be used for deploy
     Type: String
     Default: latest
+  HttpProtocol:
+    Description: Whether to use http or https for the pygeoapi URLs
+    Type: String
+    Default: http
 Mappings:
   # Hard values for the subnet masks. These masks define
   # the range of internal IP addresses that can be assigned.
@@ -336,7 +340,12 @@ Resources:
                   - "/"
                   - !Ref DBName
             - Name: DNSName
-              Value: !GetAtt PublicLoadBalancer.DNSName
+              Value: !Join
+                - ''
+                -
+                  - !Ref HttpProtocol
+                  - "://"
+                  - !GetAtt PublicLoadBalancer.DNSName
           # FIXME: image should be pulled from ECR based on the API code
           Image: !Join
             - ""
