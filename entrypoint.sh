@@ -57,12 +57,12 @@ function error() {
 # PyGeoAPI Workdir
 cd ${PYGEOAPI_HOME}
 
-# echo "Trying to generate openapi.yml"
-# pygeoapi generate-openapi-document -c ${PYGEOAPI_CONFIG} > ${PYGEOAPI_OPENAPI}
+echo "Trying to generate openapi.yml"
+pygeoapi generate-openapi-document -c ${PYGEOAPI_CONFIG} > ${PYGEOAPI_OPENAPI}
 
-# [[ $? -ne 0 ]] && error "openapi.yml could not be generated ERROR"
+[[ $? -ne 0 ]] && error "openapi.yml could not be generated ERROR"
 
-# echo "openapi.yml generated continue to pygeoapi"
+echo "openapi.yml generated continue to pygeoapi"
 
 cd /covidwb
 # SCRIPT_NAME should not have value '/'
@@ -73,7 +73,8 @@ gunicorn --workers ${WSGI_WORKERS} \
         --name=${CONTAINER_NAME} \
         --bind ${CONTAINER_HOST}:${CONTAINER_PORT} \
         app.main:app \
-        -k uvicorn.workers.UvicornWorker
+        -k uvicorn.workers.UvicornWorker \
+        --reload
 
 
 echo "END /entrypoint.sh"

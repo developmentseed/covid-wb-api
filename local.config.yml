@@ -121,7 +121,7 @@ resources:
                 end: 2007-10-30T08:57:29Z
         provider:
             name: CSV
-            data: tests/data/obs.csv
+            data: /pygeoapi/tests/data/obs.csv
             id_field: id
             geometry:
                 x_field: long
@@ -148,7 +148,7 @@ resources:
                 end: null  # or empty (either means open ended)
         provider:
             name: GeoJSON
-            data: tests/data/ne_110m_lakes.geojson
+            data: /pygeoapi/tests/data/ne_110m_lakes.geojson
             id_field: id
 
     countries:
@@ -173,7 +173,7 @@ resources:
                 end: null  # or empty
         provider:
             name: SQLiteGPKG
-            data: tests/data/ne_110m_admin_0_countries.sqlite
+            data: /pygeoapi/tests/data/ne_110m_admin_0_countries.sqlite
             id_field: ogc_fid
             table: ne_110m_admin_0_countries
 
@@ -345,7 +345,7 @@ resources:
             name: OGR
             data:
                 source_type: GPKG
-                source: tests/data/poi_portugal.gpkg
+                source: /pygeoapi/tests/data/poi_portugal.gpkg
                 source_srs: EPSG:4326
                 target_srs: EPSG:4326
                 source_capabilities:
@@ -384,7 +384,7 @@ resources:
             name: OGR
             data:
                 source_type: GeoJSON
-                source: tests/data/ne_110m_lakes.geojson
+                source: /pygeoapi/tests/data/ne_110m_lakes.geojson
                 source_srs: EPSG:4326
                 target_srs: EPSG:4326
                 source_capabilities:
@@ -426,7 +426,7 @@ resources:
             data:
                 source_type: SQLite
                 # source: tests/data/ne_110m_admin_0_countries.sqlite
-                source: tests/data/dutch_addresses_4326.sqlite
+                source: /pygeoapi/tests/data/dutch_addresses_4326.sqlite
                 source_srs: EPSG:4326
                 target_srs: EPSG:4326
                 source_capabilities:
@@ -467,7 +467,7 @@ resources:
             name: OGR
             data:
                 source_type: GPKG
-                source: tests/data/dutch_addresses_4326.gpkg
+                source: /pygeoapi/tests/data/dutch_addresses_4326.gpkg
                 source_srs: EPSG:4326
                 target_srs: EPSG:4326
                 source_capabilities:

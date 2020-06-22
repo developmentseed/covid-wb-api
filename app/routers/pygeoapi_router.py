@@ -34,6 +34,7 @@ import os
 from fastapi import APIRouter, Request, Response
 from pygeoapi.api import API
 from pygeoapi.util import yaml_load
+from pygeoapi.openapi import get_oas
 
 router = APIRouter()
 
@@ -42,6 +43,11 @@ with open(
     encoding="utf8"
 ) as fh:
     CONFIG = yaml_load(fh)
+
+
+def openapiobj():
+    return get_oas(CONFIG)
+
 
 api_ = API(CONFIG)
 
