@@ -175,10 +175,11 @@ Resources:
       DBSubnetGroupName: !Ref 'DBSubnetGroup'
       MasterUsername: !Ref 'DBUser'
       MasterUserPassword: !Ref 'DBPassword'
-      AllocatedStorage: '5'
-      DBInstanceClass: db.t3.small
+      AllocatedStorage: '15'
+      DBInstanceClass: db.t3.medium
       Engine: Postgres
-      EngineVersion: '11'
+      EngineVersion: '12.3'
+      AllowMajorVersionUpgrade: true
       PubliclyAccessible: true
       VPCSecurityGroups:
         - !Ref FargateContainerSecurityGroup
