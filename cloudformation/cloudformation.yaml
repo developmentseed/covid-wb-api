@@ -179,6 +179,7 @@ Resources:
       DBInstanceClass: db.t3.medium
       Engine: Postgres
       EngineVersion: '12.3'
+      AllowMajorVersionUpgrade: true
       PubliclyAccessible: true
       VPCSecurityGroups:
         - !Ref FargateContainerSecurityGroup
