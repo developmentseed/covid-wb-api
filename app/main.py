@@ -1,12 +1,16 @@
+import logging
 import os
-from fastapi import FastAPI, Request, Response
+import sys
+
+from fastapi import Depends, FastAPI, Request, Response, HTTPException, status
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.utils import get_openapi
+
 from .routers import pygeoapi_router
 import pygeoapi
-import logging
-import sys
+
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -56,19 +60,15 @@ def custom_openapi(openapi_prefix: str):
 app.openapi = custom_openapi
 
 
-@app.route("/")
-async def root(request: Request)->Response:
+@app.get("/", response_class=HTMLResponse)
+async def root() -> str:
     """
     HTTP root content of Covid WB. Intro page access point
-    :returns: Starlette HTTP Response
+    :returns: str
     """
-    content = """
+    return """
     <html><body>
     <ul>
     <li><a href='pygeoapi/'>PyGeoAPI Entrypoint</a></li>
     <li><a href='docs'>OpenAPI Docs</a></li>
     </body></html>"""
-
-    response = Response(content=content, status_code=200)
-
-    return response
