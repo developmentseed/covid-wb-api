@@ -5,7 +5,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.utils import get_openapi
 from .routers import pygeoapi_router
-from timvt.endpoints import demo, tiles, tms
+from timvt.endpoints import tiles, tms
 from timvt.events import create_start_app_handler, create_stop_app_handler
 import pygeoapi
 import logging
