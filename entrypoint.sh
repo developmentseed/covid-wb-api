@@ -34,8 +34,8 @@ echo "START /entrypoint.sh"
 
 set +e
 
-export PYGEOAPI_HOME=/pygeoapi
-export PYGEOAPI_CONFIG="${PYGEOAPI_HOME}/local.config.yml"
+export PYGEOAPI_HOME=/covidwb
+export PYGEOAPI_CONFIG="${PYGEOAPI_HOME}/constructed.config.yml"
 export PYGEOAPI_OPENAPI="${PYGEOAPI_HOME}/local.openapi.yml"
 
 # gunicorn env settings with defaults
@@ -45,9 +45,6 @@ CONTAINER_HOST=${CONTAINER_HOST:=0.0.0.0}
 CONTAINER_PORT=${CONTAINER_PORT:=80}
 WSGI_WORKERS=${WSGI_WORKERS:=4}
 
-# What to invoke: default is to run gunicorn server
-entry_cmd=${1:-run}
-
 # Shorthand
 function error() {
 	echo "ERROR: $@"
@@ -56,6 +53,10 @@ function error() {
 
 # PyGeoAPI Workdir
 cd ${PYGEOAPI_HOME}
+
+echo "generating config"
+python3 ${PYGEOAPI_HOME}/app/utils/make_config.py
+[[ $? -ne 0 ]] && error "config could not be generated ERROR"
 
 echo "Trying to generate openapi.yml"
 pygeoapi generate-openapi-document -c ${PYGEOAPI_CONFIG} > ${PYGEOAPI_OPENAPI}

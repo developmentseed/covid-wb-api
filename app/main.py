@@ -17,6 +17,10 @@ app.include_router(
     pygeoapi_router.router, prefix="/pygeoapi",
 )
 
+app.include_router(
+    timvt.router, prefix="/timvt",
+)
+
 app.mount(
     "/pygeoapi/static", StaticFiles(directory=os.path.join(pygeoapi.__path__[0], "static"))
 )
