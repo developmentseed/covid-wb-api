@@ -58,12 +58,12 @@ echo "generating config"
 python3 ${PYGEOAPI_HOME}/app/utils/make_config.py
 [[ $? -ne 0 ]] && error "config could not be generated ERROR"
 
-echo "Trying to generate openapi.yml"
-pygeoapi generate-openapi-document -c ${PYGEOAPI_CONFIG} > ${PYGEOAPI_OPENAPI}
+#echo "Trying to generate openapi.yml"
+#pygeoapi generate-openapi-document -c ${PYGEOAPI_CONFIG} > ${PYGEOAPI_OPENAPI}
 
-[[ $? -ne 0 ]] && error "openapi.yml could not be generated ERROR"
+#[[ $? -ne 0 ]] && error "openapi.yml could not be generated ERROR"
 
-echo "openapi.yml generated continue to pygeoapi"
+#echo "openapi.yml generated continue to pygeoapi"
 
 cd /covidwb
 # SCRIPT_NAME should not have value '/'

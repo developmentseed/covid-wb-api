@@ -15,10 +15,10 @@ links:  # list of 1..n related links
 provider:
     name: PostgreSQL
     data:
-        host: ${PGHOST}
-        dbname: ${PGDATABASE}
-        user: ${PGUSER}
-        password: ${PGPASSWORD}
+        host: ${POSTGRES_HOST}
+        dbname: ${POSTGRES_DBNAME}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASS}
     id_field: ogc_fid
     table: adm0
     geom_field: wkb_geometry

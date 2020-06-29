@@ -23,6 +23,7 @@ function load {
     ogr2ogr -f PGDump \
     -lco CREATE_TABLE=OFF \
     -lco DROP_TABLE=OFF \
+    -lco GEOMETRY_NAME=geom \
     -nlt PROMOTE_TO_MULTI  \
     -nln $base \
     -t_srs EPSG:4326 \
