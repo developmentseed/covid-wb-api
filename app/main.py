@@ -30,9 +30,6 @@ app.include_router(
 app.include_router(
     tms.router, prefix="/timvt",
 )
-app.include_router(
-    demo.router, prefix="/timvt",
-)
 
 app.mount(
     "/pygeoapi/static",
