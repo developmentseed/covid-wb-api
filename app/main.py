@@ -1,9 +1,12 @@
 import os
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.utils import get_openapi
 from .routers import pygeoapi_router
+from timvt.endpoints import tiles, tms
+from timvt.events import create_start_app_handler, create_stop_app_handler
 import pygeoapi
 import logging
 import sys
@@ -12,13 +15,25 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
+app.add_middleware(GZipMiddleware, minimum_size=0)
+
+app.add_event_handler("startup", create_start_app_handler(app))
+app.add_event_handler("shutdown", create_stop_app_handler(app))
 
 app.include_router(
     pygeoapi_router.router, prefix="/pygeoapi",
 )
 
+app.include_router(
+    tiles.router, prefix="/timvt",
+)
+app.include_router(
+    tms.router, prefix="/timvt",
+)
+
 app.mount(
-    "/pygeoapi/static", StaticFiles(directory=os.path.join(pygeoapi.__path__[0], "static"))
+    "/pygeoapi/static",
+    StaticFiles(directory=os.path.join(pygeoapi.__path__[0], "static")),
 )
 
 
@@ -45,8 +60,8 @@ def custom_openapi(openapi_prefix: str):
         openapi_prefix=openapi_prefix,
     )
     p = pygeoapi_router.openapiobj().copy()
-    p['paths'] = {f'/pygeoapi{k}': v for k, v in p['paths'].items()}
-    del p['servers']
+    p["paths"] = {f"/pygeoapi{k}": v for k, v in p["paths"].items()}
+    del p["servers"]
     merged = merge(openapi_schema, p)
 
     app.openapi_schema = merged
@@ -57,7 +72,7 @@ app.openapi = custom_openapi
 
 
 @app.route("/")
-async def root(request: Request)->Response:
+async def root(request: Request) -> Response:
     """
     HTTP root content of Covid WB. Intro page access point
     :returns: Starlette HTTP Response

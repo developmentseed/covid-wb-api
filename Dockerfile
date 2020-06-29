@@ -60,13 +60,14 @@ ARG ADD_DEB_PACKAGES=""
 ARG ADD_PIP_PACKAGES=""
 
 ADD https://github.com/geopython/pygeoapi/archive/master.tar.gz /pygeoapi/pygeoapi.tar.gz
+ADD https://github.com/developmentseed/timvt/archive/master.tar.gz /timvt/timvt.tar.gz
 
 # ENV settings
 ENV TZ=${TIMEZONE} \
 	DEBIAN_FRONTEND="noninteractive" \
 	DEB_BUILD_DEPS="tzdata build-essential python3-setuptools python3-pip apt-utils curl git unzip" \
 	DEB_PACKAGES="locales libgdal27 python3-gdal libsqlite3-mod-spatialite ${ADD_DEB_PACKAGES}" \
-	PIP_PACKAGES="gunicorn==20.0.4 gevent==1.5a4 wheel==0.33.4 fastapi[all]==0.58.0 uvicorn==0.11.5 ${ADD_PIP_PACKAGES}"
+	PIP_PACKAGES="gunicorn==20.0.4 gevent==1.5a4 wheel==0.33.4 fastapi[all]==0.58.0 uvicorn==0.11.5 pyyaml ${ADD_PIP_PACKAGES}"
 
 # Run all installs
 RUN \
@@ -91,6 +92,10 @@ RUN \
 	&& pip3 install -r requirements-dev.txt \
 	&& pip3 install -r requirements-provider.txt \
 	&& pip3 install -e . \
+    # Install timvt
+    && cd /timvt \
+    && tar xvfz /timvt/timvt.tar.gz --strip-components 1 \
+	&& pip3 install -e .[dev] \
 	# OGC schemas local setup
 	&& mkdir /schemas.opengis.net \
 	&& curl -O http://schemas.opengis.net/SCHEMAS_OPENGIS_NET.zip \
@@ -101,9 +106,10 @@ RUN \
 	&& apt autoremove -y  \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY ./local.config.yml /pygeoapi/local.config.yml
+# COPY ./local.config.yml /pygeoapi/local.config.yml
 COPY ./entrypoint.sh /entrypoint.sh
 COPY ./app /covidwb/app
 
 WORKDIR /covidwb
+
 CMD ["/entrypoint.sh"]
