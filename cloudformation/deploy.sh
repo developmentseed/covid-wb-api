@@ -11,4 +11,5 @@ DBUser=$DBUser DBPassword=$DBPassword \
 DBName=$DBName DBUser=$DBUser DBPassword=$DBPassword \
 DesiredCount=$DesiredCount \
 ApiImage=$ApiImage Version=$Version \
+S3Bucket=$S3Bucket \
 --region $REGION --capabilities CAPABILITY_IAM \
