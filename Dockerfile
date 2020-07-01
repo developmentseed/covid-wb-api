@@ -65,52 +65,52 @@ ADD https://github.com/developmentseed/titiler/archive/master.tar.gz /titiler/ti
 
 # ENV settings
 ENV TZ=${TIMEZONE} \
-	DEBIAN_FRONTEND="noninteractive" \
-	DEB_BUILD_DEPS="tzdata build-essential python3-setuptools python3-dev python3-pip apt-utils curl git unzip" \
-	DEB_PACKAGES="locales libgdal27 python3-gdal libsqlite3-mod-spatialite ${ADD_DEB_PACKAGES}" \
-	PIP_PACKAGES="gunicorn==20.0.4 gevent==1.5a4 wheel==0.33.4 fastapi[all]==0.58.0 uvicorn==0.11.5 pyyaml ${ADD_PIP_PACKAGES}"
+    DEBIAN_FRONTEND="noninteractive" \
+    DEB_BUILD_DEPS="tzdata build-essential python3-setuptools python3-dev python3-pip apt-utils curl git unzip" \
+    DEB_PACKAGES="locales libgdal27 python3-gdal libsqlite3-mod-spatialite ${ADD_DEB_PACKAGES}" \
+    PIP_PACKAGES="gunicorn==20.0.4 gevent==1.5a4 wheel==0.33.4 fastapi[all]==0.58.0 uvicorn==0.11.5 pyyaml ${ADD_PIP_PACKAGES}"
 
 # Run all installs
 RUN \
-	# Install dependencies
-	apt-get update \
-	&& apt-get --no-install-recommends install -y ${DEB_BUILD_DEPS} ${DEB_PACKAGES} \
-	# Timezone
-	&& cp /usr/share/zoneinfo/${TZ} /etc/localtime\
-	&& dpkg-reconfigure tzdata \
-	# Locale
-	&& sed -i -e "s/# ${LOCALE} UTF-8/${LOCALE} UTF-8/" /etc/locale.gen \
-	&& dpkg-reconfigure --frontend=noninteractive locales \
-	&& update-locale LANG=${LOCALE} \
-	&& echo "For ${TZ} date=$(date)" && echo "Locale=$(locale)" \
-	# Upgrade pip3 and install packages
-	&& python3 -m pip install --upgrade pip \
-	&& pip3 install ${PIP_PACKAGES} \
-	# Install pygeoapi
+    # Install dependencies
+    apt-get update \
+    && apt-get --no-install-recommends install -y ${DEB_BUILD_DEPS} ${DEB_PACKAGES} \
+    # Timezone
+    && cp /usr/share/zoneinfo/${TZ} /etc/localtime\
+    && dpkg-reconfigure tzdata \
+    # Locale
+    && sed -i -e "s/# ${LOCALE} UTF-8/${LOCALE} UTF-8/" /etc/locale.gen \
+    && dpkg-reconfigure --frontend=noninteractive locales \
+    && update-locale LANG=${LOCALE} \
+    && echo "For ${TZ} date=$(date)" && echo "Locale=$(locale)" \
+    # Upgrade pip3 and install packages
+    && python3 -m pip install --upgrade pip \
+    && pip3 install ${PIP_PACKAGES} \
+    # Install pygeoapi
     && cd /pygeoapi \
     && tar xvfz /pygeoapi/pygeoapi.tar.gz --strip-components 1 \
-	&& pip3 install -r requirements.txt \
-	&& pip3 install -r requirements-dev.txt \
-	&& pip3 install -r requirements-provider.txt \
-	&& pip3 install -e . \
+    && pip3 install -r requirements.txt \
+    && pip3 install -r requirements-dev.txt \
+    && pip3 install -r requirements-provider.txt \
+    && pip3 install -e . \
     # Install timvt
     && cd /timvt \
     && tar xvfz /timvt/timvt.tar.gz --strip-components 1 \
     # TODO: probably do not need the timvt 'dev' reqs in container
-	&& pip3 install -e .[dev] \
-	# Install titiler
-	&& cd /titiler \
+    && pip3 install -e .[dev] \
+    # Install titiler
+    && cd /titiler \
     && tar xvfz titiler.tar.gz --strip-components 1 \
-	&& pip install -e . \
-	# OGC schemas local setup
-	&& mkdir /schemas.opengis.net \
-	&& curl -O http://schemas.opengis.net/SCHEMAS_OPENGIS_NET.zip \
-	&& unzip ./SCHEMAS_OPENGIS_NET.zip "ogcapi/*" -d /schemas.opengis.net \
-	# Cleanup TODO: remove unused Locales and TZs
-	&& pip3 uninstall --yes wheel \
-	&& apt-get remove --purge ${DEB_BUILD_DEPS} -y \
-	&& apt autoremove -y  \
-	&& rm -rf /var/lib/apt/lists/*
+    && pip install -e . \
+    # OGC schemas local setup
+    && mkdir /schemas.opengis.net \
+    && curl -O http://schemas.opengis.net/SCHEMAS_OPENGIS_NET.zip \
+    && unzip ./SCHEMAS_OPENGIS_NET.zip "ogcapi/*" -d /schemas.opengis.net \
+    # Cleanup TODO: remove unused Locales and TZs
+    && pip3 uninstall --yes wheel \
+    && apt-get remove --purge ${DEB_BUILD_DEPS} -y \
+    && apt autoremove -y  \
+    && rm -rf /var/lib/apt/lists/*
 
 # COPY ./local.config.yml /pygeoapi/local.config.yml
 COPY ./entrypoint.sh /entrypoint.sh
