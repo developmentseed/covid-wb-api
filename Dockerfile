@@ -61,11 +61,12 @@ ARG ADD_PIP_PACKAGES=""
 
 ADD https://github.com/geopython/pygeoapi/archive/master.tar.gz /pygeoapi/pygeoapi.tar.gz
 ADD https://github.com/developmentseed/timvt/archive/master.tar.gz /timvt/timvt.tar.gz
+ADD https://github.com/developmentseed/titiler/archive/master.tar.gz /titiler/titiler.tar.gz
 
 # ENV settings
 ENV TZ=${TIMEZONE} \
 	DEBIAN_FRONTEND="noninteractive" \
-	DEB_BUILD_DEPS="tzdata build-essential python3-setuptools python3-pip apt-utils curl git unzip" \
+	DEB_BUILD_DEPS="tzdata build-essential python3-setuptools python3-dev python3-pip apt-utils curl git unzip" \
 	DEB_PACKAGES="locales libgdal27 python3-gdal libsqlite3-mod-spatialite ${ADD_DEB_PACKAGES}" \
 	PIP_PACKAGES="gunicorn==20.0.4 gevent==1.5a4 wheel==0.33.4 fastapi[all]==0.58.0 uvicorn==0.11.5 pyyaml ${ADD_PIP_PACKAGES}"
 
@@ -95,7 +96,12 @@ RUN \
     # Install timvt
     && cd /timvt \
     && tar xvfz /timvt/timvt.tar.gz --strip-components 1 \
+    # TODO: probably do not need the timvt 'dev' reqs in container
 	&& pip3 install -e .[dev] \
+	# Install titiler
+	&& cd /titiler \
+    && tar xvfz titiler.tar.gz --strip-components 1 \
+	&& pip install -e . \
 	# OGC schemas local setup
 	&& mkdir /schemas.opengis.net \
 	&& curl -O http://schemas.opengis.net/SCHEMAS_OPENGIS_NET.zip \
