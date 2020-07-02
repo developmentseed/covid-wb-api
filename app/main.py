@@ -7,6 +7,8 @@ from fastapi.openapi.utils import get_openapi
 from .routers import pygeoapi_router
 from timvt.endpoints import tiles, tms
 from timvt.events import create_start_app_handler, create_stop_app_handler
+from titiler.api.endpoints import cog
+
 import pygeoapi
 import logging
 import sys
@@ -30,12 +32,14 @@ app.include_router(
 app.include_router(
     tms.router, prefix="/timvt",
 )
+app.include_router(
+    cog.router, prefix="/raster"
+)
 
 app.mount(
     "/pygeoapi/static",
     StaticFiles(directory=os.path.join(pygeoapi.__path__[0], "static")),
 )
-
 
 def merge(source, destination):
     for key, value in source.items():
