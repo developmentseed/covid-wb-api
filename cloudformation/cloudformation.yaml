@@ -314,7 +314,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - 's3:ListBucket'
-                Resource: !Sub 'arn:aws:s3:::${S3Bucket}*'
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}'
 
 
   LogGroup:
@@ -355,6 +355,16 @@ Resources:
                   - !GetAtt [DB, Endpoint.Port]
                   - "/"
                   - !Ref DBName
+            - Name: POSTGRES_HOST
+              Value: !GetAtt [DB, Endpoint.Address]
+            - Name: POSTGRES_DBNAME
+              Value: !Ref DBName
+            - Name: POSTGRES_USER
+              Value: !Ref DBUser
+            - Name: POSTGRES_PASS
+              Value: !Ref DBPassword
+            - Name: POSTGRES_PORT
+              Value: !GetAtt [DB, Endpoint.Port]
             - Name: DNSName
               Value: !Join
                 - ''
