@@ -75,6 +75,10 @@ Parameters:
     Description: Whether to use http or https for the pygeoapi URLs
     Type: String
     Default: http
+  S3Bucket:
+    Type: String
+    Default: covid-wb
+    Description: Bucket where all the data is stored.
 Mappings:
   # Hard values for the subnet masks. These masks define
   # the range of internal IP addresses that can be assigned.
@@ -175,10 +179,11 @@ Resources:
       DBSubnetGroupName: !Ref 'DBSubnetGroup'
       MasterUsername: !Ref 'DBUser'
       MasterUserPassword: !Ref 'DBPassword'
-      AllocatedStorage: '5'
-      DBInstanceClass: db.t3.small
+      AllocatedStorage: '15'
+      DBInstanceClass: db.t3.medium
       Engine: Postgres
-      EngineVersion: '11'
+      EngineVersion: '12.3'
+      AllowMajorVersionUpgrade: true
       PubliclyAccessible: true
       VPCSecurityGroups:
         - !Ref FargateContainerSecurityGroup
@@ -300,6 +305,17 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                  - 's3:DeleteObject'
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}*'
+              - Effect: Allow
+                Action:
+                  - 's3:ListBucket'
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}*'
+
 
   LogGroup:
     Type: AWS::Logs::LogGroup
