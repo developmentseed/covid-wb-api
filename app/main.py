@@ -1,17 +1,18 @@
 import json
+import logging
 import re
+import sys
+
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.openapi.utils import get_openapi
-from timvt.endpoints import tiles, demo
-from timvt.db.events import close_db_connection, connect_to_db
+from fastapi.responses import JSONResponse
 from timvt.db.catalog import table_index
+from timvt.db.events import close_db_connection, connect_to_db
+from timvt.endpoints import tiles, demo
 from titiler.api.endpoints import cog
 
-import logging
-import sys
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -19,8 +20,7 @@ app = FastAPI(docs_url="/")
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 app.add_middleware(GZipMiddleware, minimum_size=0)
 
-# Register Start/Stop application event
-# handler to setup/stop the database connection
+
 @app.on_event("startup")
 async def startup_event():
     """
@@ -61,8 +61,8 @@ for r in app.routes:
 async def remove_memcached_middleware(request: Request, call_next):
     """
     Remove memcached layer from titiler (quick and dirty approach)
-    Note: This could effect any other routes that happen to use state.cache, which could be bad.
-    timvt does not reference a cache state.
+    Note: This could effect any other routes that happen to use state.cache,
+    which could be bad. timvt does not reference a cache state.
     """
     request.state.cache = None
     return await call_next(request)
