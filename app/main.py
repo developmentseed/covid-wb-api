@@ -8,6 +8,8 @@ from fastapi.openapi.utils import get_openapi
 from timvt.endpoints import tiles, demo
 from timvt.db.events import close_db_connection, connect_to_db
 from timvt.db.catalog import table_index
+from titiler.api.endpoints import cog
+
 import logging
 import sys
 
@@ -42,12 +44,28 @@ app.include_router(
 app.include_router(
     tiles.router, prefix="/vector",
 )
+app.include_router(
+    cog.router, prefix="/cog", tags=['Raster Tiles (COG)']
+)
+
 # remove "/tiles/{identifier}/{table}/{z}/{x}/{y}.pbf" endpoint
 for r in app.routes:
     if re.search('TileMatrixSetId', r.path):
         app.routes.remove(r)
     if r.path == "/vector/":
         app.routes.remove(r)
+
+
+# TODO: remove when https://github.com/developmentseed/titiler/pull/46 is merged
+@app.middleware("http")
+async def remove_memcached_middleware(request: Request, call_next):
+    """
+    Remove memcached layer from titiler (quick and dirty approach)
+    Note: This could effect any other routes that happen to use state.cache, which could be bad.
+    timvt does not reference a cache state.
+    """
+    request.state.cache = None
+    return await call_next(request)
 
 
 @app.get("/RiskSchema.json", tags=["Risk Schema"], summary="Risk Schema")
