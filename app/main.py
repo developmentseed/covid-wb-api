@@ -1,13 +1,13 @@
-import os
 import json
-from fastapi import FastAPI, Request, Response
+import re
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.utils import get_openapi
-from timvt.endpoints import tiles, tms, index, demo
-from timvt.events import create_start_app_handler, create_stop_app_handler
+from timvt.endpoints import tiles, demo
+from timvt.db.events import close_db_connection, connect_to_db
+from timvt.db.catalog import table_index
 import logging
 import sys
 
@@ -17,8 +17,24 @@ app = FastAPI(docs_url="/")
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 app.add_middleware(GZipMiddleware, minimum_size=0)
 
-app.add_event_handler("startup", create_start_app_handler(app))
-app.add_event_handler("shutdown", create_stop_app_handler(app))
+# Register Start/Stop application event
+# handler to setup/stop the database connection
+@app.on_event("startup")
+async def startup_event():
+    """
+    Application startup:
+    register the database connection and create table list.
+    """
+    await connect_to_db(app)
+    # Fetch database table list
+    app.state.Catalog = await table_index(app.state.pool)
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Application shutdown: de-register the database connection."""
+    await close_db_connection(app)
+
 
 app.include_router(
     demo.router, prefix="/vector",
@@ -28,16 +44,15 @@ app.include_router(
 )
 # remove "/tiles/{identifier}/{table}/{z}/{x}/{y}.pbf" endpoint
 for r in app.routes:
-    if r.path == '/vector/tiles/{identifier}/{table}/{z}/{x}/{y}.pbf':
+    if re.search('TileMatrixSetId', r.path):
         app.routes.remove(r)
-    if r.path == '/vector/':
+    if r.path == "/vector/":
         app.routes.remove(r)
-
 
 
 @app.get("/RiskSchema.json", tags=["Risk Schema"], summary="Risk Schema")
 async def root(request: Request) -> JSONResponse:
-    with open('app/templates/RiskSchema.json','r') as f:
+    with open("app/templates/RiskSchema.json", "r") as f:
         content = json.loads(f.read())
 
     response = JSONResponse(content=content, status_code=200)
@@ -57,20 +72,17 @@ def custom_openapi(openapi_prefix: str):
     )
 
     cat = app.state.Catalog
-    tables_schema = {
-        'title' : 'Table',
-        'enum' : [r["table"] for r in cat.index]
-    }
-    #raise Exception(o['paths'].keys())
-    for path in o['paths'].values():
-        if path['get']['summary'] == 'Demo':
-            path['get']['summary'] = "Vector Tile Simple Viewer"
-            path['get']['tags'] = ["Vector Tile Simple Viewer"]
-        parameters = path['get'].get('parameters')
+    tables_schema = {"title": "Table", "enum": [r["table"] for r in cat]}
+    # raise Exception(o['paths'].keys())
+    for path in o["paths"].values():
+        if path["get"]["summary"] == "Demo":
+            path["get"]["summary"] = "Vector Tile Simple Viewer"
+            path["get"]["tags"] = ["Vector Tile Simple Viewer"]
+        parameters = path["get"].get("parameters")
         if parameters is not None:
             for param in parameters:
-                if param.get('description') == "Table Name":
-                    param['schema'] = tables_schema
+                if param.get("description") == "Table Name":
+                    param["schema"] = tables_schema
     app.openapi_schema = o
     return app.openapi_schema
 
