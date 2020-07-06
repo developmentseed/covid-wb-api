@@ -142,7 +142,7 @@ Resources:
   # sends network traffic via the internet gateway.
   InternetGateway:
     Type: AWS::EC2::InternetGateway
-  GatewayAttachement:
+  GatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref 'VPC'
@@ -153,7 +153,7 @@ Resources:
       VpcId: !Ref 'VPC'
   PublicRoute:
     Type: AWS::EC2::Route
-    DependsOn: GatewayAttachement
+    DependsOn: GatewayAttachment
     Properties:
       RouteTableId: !Ref 'PublicRouteTable'
       DestinationCidrBlock: '0.0.0.0/0'
@@ -173,7 +173,7 @@ Resources:
   # RDS Resources
   DB:
     Type: AWS::RDS::DBInstance
-    DependsOn: GatewayAttachement
+    DependsOn: GatewayAttachment
     Properties:
       DBName: !Sub '${DBName}'
       DBSubnetGroupName: !Ref 'DBSubnetGroup'
@@ -314,7 +314,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - 's3:ListBucket'
-                Resource: !Sub 'arn:aws:s3:::${S3Bucket}*'
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}'
 
 
   LogGroup:
@@ -355,6 +355,16 @@ Resources:
                   - !GetAtt [DB, Endpoint.Port]
                   - "/"
                   - !Ref DBName
+            - Name: POSTGRES_HOST
+              Value: !GetAtt [DB, Endpoint.Address]
+            - Name: POSTGRES_DBNAME
+              Value: !Ref DBName
+            - Name: POSTGRES_USER
+              Value: !Ref DBUser
+            - Name: POSTGRES_PASS
+              Value: !Ref DBPassword
+            - Name: POSTGRES_PORT
+              Value: !GetAtt [DB, Endpoint.Port]
             - Name: DNSName
               Value: !Join
                 - ''
@@ -420,7 +430,7 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       TargetType: ip
-      Name: api
+      Name: !Join ['-', [!Ref 'AWS::StackName', 'api']]
       Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 2
