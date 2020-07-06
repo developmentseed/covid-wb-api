@@ -37,6 +37,8 @@ set +e
 export PYGEOAPI_HOME=/covidwb
 export PYGEOAPI_CONFIG="${PYGEOAPI_HOME}/constructed.config.yml"
 export PYGEOAPI_OPENAPI="${PYGEOAPI_HOME}/local.openapi.yml"
+# rasterio on debian/ubuntu requires this curl config https://github.com/mapbox/rasterio/issues/942
+export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 # gunicorn env settings with defaults
 SCRIPT_NAME=${SCRIPT_NAME:=pygeoapi}
