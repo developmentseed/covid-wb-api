@@ -45,7 +45,7 @@ app.include_router(
     tiles.router, prefix="/vector",
 )
 app.include_router(
-    cog.router, prefix="/raster"
+    cog.router, prefix="/cog", tags=['Raster Tiles (COG)']
 )
 
 # remove "/tiles/{identifier}/{table}/{z}/{x}/{y}.pbf" endpoint
