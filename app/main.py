@@ -56,6 +56,17 @@ for r in app.routes:
         app.routes.remove(r)
 
 
+@app.middleware("http")
+async def remove_memcached_middleware(request: Request, call_next):
+    """
+    Remove memcached layer from titiler (quick and dirty approach)
+    Note: This could effect any other routes that happen to use state.cache, which could be bad.
+    timvt does not reference a cache state.
+    """
+    request.state.cache = None
+    return await call_next(request)
+
+
 @app.get("/RiskSchema.json", tags=["Risk Schema"], summary="Risk Schema")
 async def root(request: Request) -> JSONResponse:
     with open("app/templates/RiskSchema.json", "r") as f:
