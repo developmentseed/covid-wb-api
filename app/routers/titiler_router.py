@@ -519,9 +519,3 @@ def wtms(
         },
         media_type=MimeTypes.xml.value,
     )
-
-
-@router.get("/viewer", response_class=HTMLResponse, tags=["Webpage"])
-def cog_viewer(request: Request, template=Depends(web_template)):
-    """Cloud Optimized GeoTIFF Viewer."""
-    return template(request, "cog_index.html", "cog_tilejson", "cog_metadata")
