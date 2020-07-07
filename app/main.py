@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from timvt.db.catalog import table_index
 from timvt.db.events import close_db_connection, connect_to_db
 from timvt.endpoints import tiles, demo
-from titiler.api.endpoints import cog
+from .routers.titiler_router import router as cogrouter
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -45,7 +45,7 @@ app.include_router(
     tiles.router, prefix="/vector",
 )
 app.include_router(
-    cog.router, prefix="/cog", tags=['Raster Tiles (COG)']
+    cogrouter, prefix="/cog", tags=['Raster Tiles (COG)']
 )
 
 # remove "/tiles/{identifier}/{table}/{z}/{x}/{y}.pbf" endpoint
