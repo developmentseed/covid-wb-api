@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-BASEDIR=/home/bitner/devseed/wb-covid/geojson-files
+BASEDIR=/home/bitner/devseed/wb-covid/workspace/CoVID
 export PG_USE_COPY=YES
 NJOBS=10
 
@@ -27,7 +27,7 @@ function load {
     -nlt PROMOTE_TO_MULTI  \
     -nln $base \
     -t_srs EPSG:4326 \
-    /vsistdout/ $file | psql
+    /vsistdout/ $file | sed -e "s/wb_admo_co/wb_adm0_co/g" | psql
 }
 export -f load
 
