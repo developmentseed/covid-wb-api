@@ -39,7 +39,7 @@ function load_all {
 }
 export -f load_all
 
-psql -f db_schema.sql
+# psql -f db_schema.sql
 
 load_all adm0.geojson
 load_all adm1.geojson
