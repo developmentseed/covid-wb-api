@@ -13,6 +13,10 @@ Parameters:
     Description: The priority for the routing rule added to the load balancer.
                  This only applies if your have multiple services which are
                  assigned to different paths on the load balancer.
+  DBSnapshotName:
+    Type: String
+    Default: false
+    Description: DB Snapshot Name to create the new RDS from. Use false to not restore
   DBName:
     Default: covidwbapi
     Description: The database name
@@ -98,6 +102,8 @@ Mappings:
       CIDR: '10.0.0.0/24'
     PublicTwo:
       CIDR: '10.0.1.0/24'
+Conditions:
+  UseDBSnapshotCondition: !Not [!Equals [!Ref DBSnapshotName, false]]
 Resources:
   # VPC in which containers will be networked.
   # It has two public subnets
@@ -175,7 +181,10 @@ Resources:
     Type: AWS::RDS::DBInstance
     DependsOn: GatewayAttachment
     Properties:
-      DBName: !Sub '${DBName}'
+      DBSnapshotIdentifier:
+        !If [UseDBSnapshotCondition, !Ref DBSnapshotName, !Ref "AWS::NoValue"]
+      DBName:
+        !If [UseDBSnapshotCondition, !Ref "AWS::NoValue", !Sub '${DBName}']
       DBSubnetGroupName: !Ref 'DBSubnetGroup'
       MasterUsername: !Ref 'DBUser'
       MasterUserPassword: !Ref 'DBPassword'
