@@ -1,11 +1,10 @@
 import json
-import re
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.openapi.utils import get_openapi
-from timvt.endpoints import tiles, demo
+from timvt.endpoints import tiles, demo, index
 from timvt.db.events import close_db_connection, connect_to_db
 from timvt.db.catalog import table_index
 import logging
@@ -42,10 +41,11 @@ app.include_router(
 app.include_router(
     tiles.router, prefix="/vector",
 )
+app.include_router(
+    index.router, prefix="/vector",
+)
 # remove "/tiles/{identifier}/{table}/{z}/{x}/{y}.pbf" endpoint
 for r in app.routes:
-    if re.search('TileMatrixSetId', r.path):
-        app.routes.remove(r)
     if r.path == "/vector/":
         app.routes.remove(r)
 
@@ -75,14 +75,23 @@ def custom_openapi(openapi_prefix: str):
     tables_schema = {"title": "Table", "enum": [r["table"] for r in cat]}
     # raise Exception(o['paths'].keys())
     for path in o["paths"].values():
-        if path["get"]["summary"] == "Demo":
-            path["get"]["summary"] = "Vector Tile Simple Viewer"
-            path["get"]["tags"] = ["Vector Tile Simple Viewer"]
-        parameters = path["get"].get("parameters")
-        if parameters is not None:
-            for param in parameters:
-                if param.get("description") == "Table Name":
-                    param["schema"] = tables_schema
+        get = path.get("get")
+        if get is not None:
+            summary = get.get("summary", None)
+            tags = get.get("tags", None)
+            parameters = get.get("parameters", None)
+            if summary == "Demo":
+                get["summary"] = "Vector Tile Simple Viewer"
+                get["tags"] = ["Vector Tile API"]
+            if summary == "Display Index":
+                get["summary"] = "Available Layer Metadata"
+                get["tags"] = ["Vector Tile API"]
+            if "Tiles" in tags:
+                get["tags"] = ["Vector Tile API"]
+            if parameters is not None:
+                for param in parameters:
+                    if param.get("description") == "Table Name":
+                        param["schema"] = tables_schema
     app.openapi_schema = o
     return app.openapi_schema
 
