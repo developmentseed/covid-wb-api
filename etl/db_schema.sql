@@ -83,51 +83,7 @@ CREATE TABLE IF NOT EXISTS hd_urban_fishnets (
 );
 --*/
 
-DROP TABLE IF EXISTS adm0_base_stats;
-DROP TABLE IF EXISTS adm1_base_stats;
-DROP TABLE IF EXISTS adm2_base_stats;
-DROP TABLE IF EXISTS urban_areas_base_stats;
-DROP TABLE IF EXISTS urban_areas_hd_base_stats;
-DROP TABLE IF EXISTS urban_fishnets_base_stats;
-DROP TABLE IF EXISTS hd_urban_fishnets_base_stats;
 
-CREATE TABLE IF NOT EXISTS adm0_base_stats (
-    ogc_fid int,
-    geom_key text primary key,
-    r10_sum float,
-    p1_sum float,
-    p2_sum float,
-    lc_11 int,
-    lc_14 int,
-    lc_20 int,
-    lc_30 int,
-    lc_40 int,
-    lc_50 int,
-    lc_60 int,
-    lc_70 int,
-    lc_90 int,
-    lc_100 int,
-    lc_110 int,
-    lc_120 int,
-    lc_130 int,
-    lc_140 int,
-    lc_150 int,
-    lc_160 int,
-    lc_170 int,
-    lc_180 int,
-    lc_190 int,
-    lc_200 int,
-    lc_210 int,
-    lc_220 int,
-    lc_230 int
-);
-
-CREATE TABLE IF NOT EXISTS adm1_base_stats (LIKE adm0_base_stats);
-CREATE TABLE IF NOT EXISTS adm2_base_stats (LIKE adm0_base_stats);
-CREATE TABLE IF NOT EXISTS urban_areas_base_stats (LIKE adm0_base_stats);
-CREATE TABLE IF NOT EXISTS urban_areas_hd_base_stats (LIKE adm0_base_stats);
-CREATE TABLE IF NOT EXISTS urban_fishnets_base_stats (LIKE adm0_base_stats);
-CREATE TABLE IF NOT EXISTS hd_urban_fishnets_base_stats (LIKE adm0_base_stats);
 
 --/*INDEXES
 CREATE INDEX IF NOT EXISTS adm0_geom ON adm0 USING GIST (geom);
