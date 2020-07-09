@@ -1,14 +1,18 @@
 import json
+import logging
+import re
+import sys
+
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.openapi.utils import get_openapi
-from timvt.endpoints import tiles, demo, index
-from timvt.db.events import close_db_connection, connect_to_db
+from fastapi.responses import JSONResponse
 from timvt.db.catalog import table_index
-import logging
-import sys
+from timvt.db.events import close_db_connection, connect_to_db
+from timvt.endpoints import tiles, demo, index
+from .routers.titiler_router import router as cogrouter
+
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -16,8 +20,7 @@ app = FastAPI(docs_url="/")
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 app.add_middleware(GZipMiddleware, minimum_size=0)
 
-# Register Start/Stop application event
-# handler to setup/stop the database connection
+
 @app.on_event("startup")
 async def startup_event():
     """
@@ -44,10 +47,26 @@ app.include_router(
 app.include_router(
     index.router, prefix="/vector",
 )
+app.include_router(
+    cogrouter, prefix="/cog", tags=['Raster Tiles (COG)']
+)
+
 # remove "/tiles/{identifier}/{table}/{z}/{x}/{y}.pbf" endpoint
 for r in app.routes:
     if r.path == "/vector/":
         app.routes.remove(r)
+
+
+# TODO: remove when https://github.com/developmentseed/titiler/pull/46 is merged
+@app.middleware("http")
+async def remove_memcached_middleware(request: Request, call_next):
+    """
+    Remove memcached layer from titiler (quick and dirty approach)
+    Note: This could effect any other routes that happen to use state.cache,
+    which could be bad. timvt does not reference a cache state.
+    """
+    request.state.cache = None
+    return await call_next(request)
 
 
 @app.get("/RiskSchema.json", tags=["Risk Schema"], summary="Risk Schema")

@@ -314,17 +314,6 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
-              - Effect: Allow
-                Action:
-                  - 's3:GetObject'
-                  - 's3:PutObject'
-                  - 's3:DeleteObject'
-                Resource: !Sub 'arn:aws:s3:::${S3Bucket}*'
-              - Effect: Allow
-                Action:
-                  - 's3:ListBucket'
-                Resource: !Sub 'arn:aws:s3:::${S3Bucket}'
-
 
   LogGroup:
     Type: AWS::Logs::LogGroup
@@ -468,7 +457,16 @@ Resources:
               Service: [ecs-tasks.amazonaws.com]
             Action: ['sts:AssumeRole']
       Path: /
-
+      Policies:
+        - PolicyName: s3Policy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: ['s3:ListBucket']
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}'
+              - Effect: Allow
+                Action: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject']
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
 
 Outputs:
   DNSName:
