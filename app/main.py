@@ -11,9 +11,10 @@ from fastapi.responses import JSONResponse
 from timvt.db.catalog import table_index
 from timvt.db.events import close_db_connection, connect_to_db
 from timvt.endpoints import tiles, demo, index
+from timvt.models.metadata import TableMetadata
 from .routers.titiler_router import router as cogrouter
 from .routers.attribute_router import router as attribute_router
-
+from typing import List
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -54,6 +55,27 @@ app.include_router(
 app.include_router(
     cogrouter, prefix="/cog", tags=['Raster Tiles (COG)']
 )
+
+
+@app.get(
+    "/vector/index",
+    response_model=List[TableMetadata],
+    tags=["Tiles"],
+    description="Reindex the Vector Data Catalog.",
+)
+async def reindex(
+    request: Request
+):
+    """Force a reindex of the catalog."""
+    request.app.state.Catalog = await table_index(request.app.state.pool)
+    return [
+        TableMetadata(
+            **table,
+            link=request.url_for("tilejson", table=table["id"])
+        )
+        for table in request.app.state.Catalog
+    ]
+
 
 # remove "/tiles/{identifier}/{table}/{z}/{x}/{y}.pbf" endpoint
 for r in app.routes:
