@@ -12,6 +12,7 @@ from timvt.db.catalog import table_index
 from timvt.db.events import close_db_connection, connect_to_db
 from timvt.endpoints import tiles, demo, index
 from .routers.titiler_router import router as cogrouter
+from .routers.attribute_router import router as attribute_router
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -37,7 +38,9 @@ async def shutdown_event():
     """Application shutdown: de-register the database connection."""
     await close_db_connection(app)
 
-
+app.include_router(
+    attribute_router, prefix="/vector", tags=['Tiles']
+)
 app.include_router(
     demo.router, prefix="/vector",
 )
@@ -47,6 +50,7 @@ app.include_router(
 app.include_router(
     index.router, prefix="/vector",
 )
+
 app.include_router(
     cogrouter, prefix="/cog", tags=['Raster Tiles (COG)']
 )

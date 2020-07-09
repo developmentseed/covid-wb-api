@@ -92,7 +92,7 @@ CREATE INDEX IF NOT EXISTS adm2_geom  ON adm2 USING GIST (geom);
 CREATE INDEX IF NOT EXISTS urban_areas_geom  ON urban_areas USING GIST (geom);
 CREATE INDEX IF NOT EXISTS urban_areas_hd_geom  ON urban_areas_hd USING GIST (geom);
 CREATE INDEX IF NOT EXISTS urban_fishnets_geom  ON urban_fishnets USING GIST (geom);
-CREATE INDEX IF NOT EXISTS urban_fishnets_geohas  ON urban_fishnets (geohash);
+CREATE INDEX IF NOT EXISTS urban_fishnets_geohash  ON urban_fishnets (geohash);
 CREATE INDEX IF NOT EXISTS hd_urban_fishnets_geom  ON hd_urban_fishnets USING GIST (geom);
 CREATE INDEX IF NOT EXISTS hd_urban_fishnets_geohash  ON hd_urban_fishnets (geohash);
 --*/
