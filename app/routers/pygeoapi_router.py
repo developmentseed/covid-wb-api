@@ -58,7 +58,9 @@ async def root(request: Request):
     HTTP root content of pygeoapi. Intro page access point
     :returns: Starlette HTTP Response
     """
-    headers, status_code, content = api_.root(request.headers, request.query_params)
+    headers, status_code, content = api_.root(
+        request.headers, request.query_params
+    )
 
     response = Response(content=content, status_code=status_code)
     if headers:
