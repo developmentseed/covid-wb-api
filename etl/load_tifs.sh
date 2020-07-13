@@ -26,18 +26,26 @@ export -f cog
 # titiler/rasterio does not fail later on. Note: requires cog() be run first to generate the .vrt.
 function cog_for_tiler() {
   gdal_translate -of VRT -ot UInt16 -a_nodata 0 "${1}.vrt" "${1}_uint16.vrt"
-  rio cogeo create --cog-profile lzw --web-optimized "${1}_uint16.vrt" "${1}_for_tiler.tif"
-  rio cogeo validate "${1}_for_tiler.tif"
+  rio cogeo create --cog-profile lzw --web-optimized "${1}_uint16.vrt" "${1}.tif"
+  rio cogeo validate "${1}.tif"
 }
 export -f cog_for_tiler
 
 cog lc
-cog wp_2020_1km
-cog wp2020_vulnerability_map
-cog wp_2020_1km_urban_pop
 
+# for each of the remaining layers, rename the float64 cog to have suffix "_data",
+# and retain the original filename for the visualization cog w/ uint16.
+
+cog wp_2020_1km
+mv wp_2020_1km.tif wp_2020_1km_data.tif
 cog_for_tiler wp_2020_1km
+
+cog wp2020_vulnerability_map
+mv wp2020_vulnerability_map.tif wp2020_vulnerability_map_data.tif
 cog_for_tiler wp2020_vulnerability_map
+
+cog wp_2020_1km_urban_pop
+mv wp_2020_1km_urban_pop.tif wp_2020_1km_urban_pop_data.tif
 cog_for_tiler wp_2020_1km_urban_pop
 
 rm ./*.vrt
