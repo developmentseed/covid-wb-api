@@ -1,3 +1,5 @@
+BEGIN;
+
 DROP TABLE IF EXISTS adm0;
 CREATE TABLE IF NOT EXISTS adm0 (
     "ogc_fid" SERIAL PRIMARY KEY,
@@ -14,7 +16,6 @@ CREATE TABLE IF NOT EXISTS adm0 (
     fid_100 int,
     geohash text
 );
-CREATE INDEX ON adm0 USING GIST (geom);
 
 DROP TABLE IF EXISTS adm1;
 CREATE TABLE IF NOT EXISTS adm1 (
@@ -23,13 +24,12 @@ CREATE TABLE IF NOT EXISTS adm1 (
     iso3 text,
     iso_a2 text,
     objectid int,
-    wb_admo_co int,
+    wb_adm0_co int,
     wb_adm0_na text,
     wb_adm1_co int,
     wb_adm1_na text,
     geohash text
 );
-CREATE INDEX ON adm1 USING GIST (geom);
 
 DROP TABLE IF EXISTS adm2;
 CREATE TABLE IF NOT EXISTS adm2 (
@@ -46,44 +46,55 @@ CREATE TABLE IF NOT EXISTS adm2 (
     wb_adm2_na text,
     geohash text
 );
-CREATE INDEX ON adm2 USING GIST (geom);
 
 DROP TABLE IF EXISTS urban_areas;
-CREATE TABLE urban_areas (
+CREATE TABLE IF NOT EXISTS urban_areas (
     "ogc_fid" SERIAL PRIMARY KEY,
     geom geometry(MULTIPOLYGON,4326),
     id int,
     pop float,
     geohash text
 );
-CREATE INDEX ON urban_areas USING GIST (geom);
 
 DROP TABLE IF EXISTS urban_areas_hd;
-CREATE TABLE urban_areas_hd (
+CREATE TABLE IF NOT EXISTS  urban_areas_hd (
     "ogc_fid" SERIAL PRIMARY KEY,
     geom geometry(MULTIPOLYGON,4326),
     id int,
     pop float,
     geohash text
 );
-CREATE INDEX ON urban_areas_hd USING GIST (geom);
 
 DROP TABLE IF EXISTS urban_fishnets;
-CREATE TABLE urban_fishnets (
+CREATE TABLE IF NOT EXISTS urban_fishnets (
     "ogc_fid" SERIAL PRIMARY KEY,
     geom geometry(MULTIPOLYGON,4326),
     fid int,
     geohash text
 );
-CREATE INDEX ON urban_fishnets USING GIST (geom);
-CREATE INDEX ON urban_fishnets (geohash);
+
 
 DROP TABLE IF EXISTS hd_urban_fishnets;
-CREATE TABLE hd_urban_fishnets (
+CREATE TABLE IF NOT EXISTS hd_urban_fishnets (
     "ogc_fid" SERIAL PRIMARY KEY,
     geom geometry(MULTIPOLYGON,4326),
     fid int,
     geohash text
 );
-CREATE INDEX ON hd_urban_fishnets USING GIST (geom);
-CREATE INDEX ON hd_urban_fishnets (geohash);
+--*/
+
+
+
+--/*INDEXES
+CREATE INDEX IF NOT EXISTS adm0_geom ON adm0 USING GIST (geom);
+CREATE INDEX IF NOT EXISTS adm1_geom  ON adm1 USING GIST (geom);
+CREATE INDEX IF NOT EXISTS adm2_geom  ON adm2 USING GIST (geom);
+CREATE INDEX IF NOT EXISTS urban_areas_geom  ON urban_areas USING GIST (geom);
+CREATE INDEX IF NOT EXISTS urban_areas_hd_geom  ON urban_areas_hd USING GIST (geom);
+CREATE INDEX IF NOT EXISTS urban_fishnets_geom  ON urban_fishnets USING GIST (geom);
+CREATE INDEX IF NOT EXISTS urban_fishnets_geohash  ON urban_fishnets (geohash);
+CREATE INDEX IF NOT EXISTS hd_urban_fishnets_geom  ON hd_urban_fishnets USING GIST (geom);
+CREATE INDEX IF NOT EXISTS hd_urban_fishnets_geohash  ON hd_urban_fishnets (geohash);
+--*/
+
+COMMIT;
