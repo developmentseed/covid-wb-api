@@ -59,9 +59,9 @@ ARG LOCALE="en_US.UTF-8"
 ARG ADD_DEB_PACKAGES=""
 ARG ADD_PIP_PACKAGES=""
 
-ADD https://github.com/geopython/pygeoapi/archive/master.tar.gz /pygeoapi/pygeoapi.tar.gz
+ADD https://github.com/geopython/pygeoapi/archive/0.8.0.tar.gz /pygeoapi/pygeoapi.tar.gz
 ADD https://github.com/developmentseed/timvt/archive/master.tar.gz /timvt/timvt.tar.gz
-ADD https://github.com/developmentseed/titiler/archive/master.tar.gz /titiler/titiler.tar.gz
+ADD https://github.com/developmentseed/titiler/archive/2.1.2.tar.gz /titiler/titiler.tar.gz
 
 # ENV settings
 ENV TZ=${TIMEZONE} \
