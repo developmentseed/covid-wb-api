@@ -1,16 +1,43 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# create merged COGs from per-country rasters
+
 set -e
-BASEDIR=/home/bitner/devseed/wb-covid/data/V2ZIPFILES
-export PGDATABASE=covidwb
 
-function cog {
-    gdalbuildvrt $1.vrt $(find $BASEDIR | grep -i "$1\.tif" )
-    rio cogeo create --cog-profile lzw --web-optimized $1.vrt $1.tif
-    rm $1.vrt
+# note: first prepare BASEDIR by downloading from s3, and unzip the .tif archives:
+#   aws s3 sync s3://covid-wb/data ./s3-data
+#   cd s3-data
+#   for f in $(ls *_tiffs.zip); do unzip $f; done
+# Warning: there is lot of duplicated data in the s3 bucket, needs cleaning 2020-07-10.
+BASEDIR=../../covid-wb/s3-data
+
+# create a vrt from all input tifs.
+function build_vrt() {
+  # find all country tifs in the base directory matching the layer name
+  country_tifs=$(find $BASEDIR -iname "${1}\.tif")
+  # create virtual format for merged COG sourced from all country tifs
+  gdalbuildvrt "${1}.vrt" $country_tifs
 }
-export -f cog
+export -f build_vrt
 
-cog wp_2020_1km
-cog wp2020_vulnerability_map
-cog wp_2020_1km_urban_pop
-cog lc
+function build_population_cog() {
+  layer=$1
+  build_vrt "$layer"
+  rio cogeo create --web-optimized --overview-resampling bilinear "${layer}.vrt" "${layer}.tif"
+  rio cogeo validate "${layer}.tif"
+}
+export -f build_population_cog
+
+# landcover layer is 1 band of Byte classification
+build_vrt lc
+gdal_translate -of GTiff lc.vrt lc_colormap.tif
+python ./lc_colormap.py
+rio cogeo create --web-optimized lc_colormap.tif lc.tif
+rio cogeo validate lc.tif
+
+# population layers: 1 band of Float64
+build_population_cog wp_2020_1km
+build_population_cog wp_2020_1km_urban_pop
+build_population_cog wp2020_vulnerability_map
+
+rm ./*_colormap.tif ./*.vrt
