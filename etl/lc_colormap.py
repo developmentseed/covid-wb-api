@@ -32,5 +32,5 @@ cmap = {
     220: (255, 255, 255, 255),  # Permanent snow and ice
     230: (0, 0, 0, 0),  # Nodata
 }
-with rasterio.open("lc.tif", "r+") as src_dst:
+with rasterio.open("lc_colormap.tif", "r+") as src_dst:
     src_dst.write_colormap(1, cmap)
