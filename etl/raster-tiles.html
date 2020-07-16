@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>raster tiles test</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+	mapboxgl.accessToken = '';
+    new mapboxgl.Map({
+        container: 'map',
+        style: {
+            'version': 8,
+            'sources': {
+                'raster-tiles': {
+                    'type': 'raster',
+                    'tiles': [
+                      // 'http://covid-publi-131wmiy217ice-1414663655.us-east-1.elb.amazonaws.com/cog/wp_2020_1km/tiles/{z}/{x}/{y}.png?color_map=magma',
+                      // 'http://covid-publi-131wmiy217ice-1414663655.us-east-1.elb.amazonaws.com/cog/wp_2020_1km_urban_pop/tiles/{z}/{x}/{y}.png?color_map=magma',
+                      //'http://covid-publi-131wmiy217ice-1414663655.us-east-1.elb.amazonaws.com/cog/wp2020_vulnerability_map/tiles/{z}/{x}/{y}.png?color_map=magma',
+                      'http://covid-publi-131wmiy217ice-1414663655.us-east-1.elb.amazonaws.com/cog/lc/tiles/{z}/{x}/{y}.png'
+                    ],
+                    'tileSize': 256,
+                    'attribution': ''
+                }
+            },
+            'layers': [
+                {
+                    'id': 'simple-tiles',
+                    'type': 'raster',
+                    'source': 'raster-tiles',
+                    'minzoom': 0,
+                    'maxzoom': 22
+                }
+            ]
+        },
+        center: [-74.5, 40], // starting position
+        zoom: 2 // starting zoom
+    });
+</script>
+
+</body>
+</html>
