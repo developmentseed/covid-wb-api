@@ -42,7 +42,7 @@ LABEL maintainer="Just van den Broecke <justb4@gmail.com>"
 # CONTAINER_NAME=pygeoapi
 # CONTAINER_HOST=0.0.0.0
 # CONTAINER_PORT=80
-# WSGI_WORKERS=4
+# WSGI_WORKERS=1
 # WSGI_WORKER_TIMEOUT=6000
 # WSGI_WORKER_CLASS=gevent
 
