@@ -11,6 +11,7 @@ from rasterio.transform import from_bounds
 from rio_tiler.profiles import img_profiles
 from rio_tiler.utils import render
 from rio_tiler_crs import COGReader
+from rio_tiler.errors import TileOutsideBounds
 
 from titiler.api import utils
 from titiler.api.deps import (
@@ -29,7 +30,7 @@ from titiler.ressources.enums import ImageMimeTypes, ImageType, MimeTypes
 from titiler.ressources.responses import ImgResponse, XMLResponse
 from titiler.templates.factory import web_template
 
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Depends, Path, Query, HTTPException
 
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response
@@ -165,18 +166,21 @@ async def cog_tile(
 
     if not content:
         with utils.Timer() as t:
-            with COGReader(url, tms=tms) as cog:
-                tile, mask = cog.tile(
-                    x,
-                    y,
-                    z,
-                    tilesize=tilesize,
-                    indexes=image_params.indexes,
-                    expression=image_params.expression,
-                    nodata=image_params.nodata,
-                    **image_params.kwargs,
-                )
-                colormap = image_params.color_map or cog.colormap
+            try:
+                with COGReader(url, tms=tms) as cog:
+                    tile, mask = cog.tile(
+                        x,
+                        y,
+                        z,
+                        tilesize=tilesize,
+                        indexes=image_params.indexes,
+                        expression=image_params.expression,
+                        nodata=image_params.nodata,
+                        **image_params.kwargs,
+                    )
+                    colormap = image_params.color_map or cog.colormap
+            except TileOutsideBounds:
+                raise HTTPException(status_code=404, detail=f"tile is outside raster bounds")
         timings.append(("Read", t.elapsed))
 
         if not format:
