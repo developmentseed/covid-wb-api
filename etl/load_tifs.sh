@@ -23,7 +23,7 @@ export -f build_vrt
 function build_population_cog() {
   layer=$1
   build_vrt "$layer"
-  rio cogeo create --web-optimized --overview-resampling bilinear "${layer}.vrt" "${layer}.tif"
+  rio cogeo create --web-optimized --overview-resampling nearest "${layer}.vrt" "${layer}.tif"
   rio cogeo validate "${layer}.tif"
 }
 export -f build_population_cog
