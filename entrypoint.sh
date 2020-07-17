@@ -46,7 +46,10 @@ CONTAINER_NAME=${CONTAINER_NAME:=pygeoapi}
 CONTAINER_HOST=${CONTAINER_HOST:=0.0.0.0}
 CONTAINER_PORT=${CONTAINER_PORT:=80}
 WSGI_WORKERS=${WSGI_WORKERS:=1}
+
+# prevent rasterio/gdal from making side-car http requests https://trac.osgeo.org/gdal/wiki/CloudOptimizedGeoTIFF
 GDAL_DISABLE_READDIR_ON_OPEN=EMPTY_DIR
+CPL_VSIL_CURL_ALLOWED_EXTENSIONS=tif
 
 # Shorthand
 function error() {
