@@ -1,11 +1,15 @@
 """
+Apply internal colormap to TIF using rasterio.
+
+TODO: this colormap does not completely match all the byte values in provided the {Country}/LC.tif layers
+TODO: nodata attribute in TIF (0.0) does not match the Nodata value in the legend (230)
+
+The legend and byte values are from http://due.esrin.esa.int/files/GLOBCOVER2009_Validation_Report_2.2.pdf
+
 freely copied from @vincentsarago
 """
 
-# TODO: this colormap does not completely match all the byte values in provided the {Country}/LC.tif layers
-
 import rasterio
-# http://due.esrin.esa.int/files/GLOBCOVER2009_Validation_Report_2.2.pdf
 cmap = {
     0: (0, 0, 0, 0),  # Nodata
     11: (192, 240, 239, 255),  # Post-flooding or irrigated croplands
