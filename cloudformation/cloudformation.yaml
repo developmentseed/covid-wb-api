@@ -59,10 +59,6 @@ Parameters:
     Type: Number
     Default: '0'
     Description: The number of task instances to run on cluster.
-  MaxSize:
-    Type: Number
-    Default: '2'
-    Description: Maximum number of EC2 instances that can be launched.
   InstanceType:
     Description: EC2 instance type
     Type: String
@@ -399,7 +395,7 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 50
-      DesiredCount: 1
+      DesiredCount: !Ref DesiredCount
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
