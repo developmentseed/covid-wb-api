@@ -1,11 +1,12 @@
 # covid-wb-api
 COVID-19 Risk Schema API for the World Bank
 
-## Running locally
+## Running the API locally
+The API requires a PostgreSQL/PostGIS Database as well which must be set up separately. An RDS instance can be used which can be populated using the tools in the etl directory.
 * [Setup docker](https://www.docker.com/get-started)
 * Clone this repo `git clone https://github.com/developmentseed/covid-wb-api.git`
 * Build docker image `docker build -t covid-wb-api .`
-* Create a new environment by copying `.env-sample` and add the right PostgreSQL variables
+* Create a new environment by copying `.env-sample` to `.env` and changing the variables to point to your PostgreSQL Instance.
 * Run `docker run --env-file ./.env -p 8080:80 covid-wb-api`
 * Now visit http://localhost:8080 to see the API
 
