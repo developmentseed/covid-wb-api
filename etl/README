@@ -1,0 +1,19 @@
+# ETL Scripts to load WB Covid Data
+All scripts expect the following environment variables to be set before running:
+PGDATABASE
+PGUSER
+PGHOST
+PGPASSWORD
+
+## db_schema.sql
+This file contains the SQL that is required to set up the tables used to store data.
+
+## load_vector.sh
+This script will search the directory provided by the World Bank for _stats.csv files containing the attributes to be added to the database.
+
+## load_tifs.sh
+This script searches the directory provided by the World Bank for provided tif images and converts them to Cloud Optimized Geotiff (COG) format. These COG's then need to be posted to a public location such as S3 for the API to access.
+
+## load_attributes.sh
+This script will search the directory provided by the World Bank for geojson files for adm0, adm1, adm2, urban_areas, urban_areas_hd, urban_fishnets, and hd_urban_fishnets and load them into the database.
+
